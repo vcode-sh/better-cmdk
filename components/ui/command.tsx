@@ -194,6 +194,7 @@ function CommandShortcut({
 export {
   Command,
   CommandDialog,
+  CommandDialogContent,
   CommandInput,
   CommandList,
   CommandEmpty,
