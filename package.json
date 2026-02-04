@@ -1,0 +1,51 @@
+{
+  "name": "better-cmdk",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./index.ts",
+  "module": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": {
+      "import": "./index.ts",
+      "types": "./index.ts"
+    },
+    "./command": {
+      "import": "./components/ui/command.tsx",
+      "types": "./components/ui/command.tsx"
+    },
+    "./dialog": {
+      "import": "./components/ui/dialog.tsx",
+      "types": "./components/ui/dialog.tsx"
+    },
+    "./button": {
+      "import": "./components/ui/button.tsx",
+      "types": "./components/ui/button.tsx"
+    },
+    "./utils": {
+      "import": "./lib/utils.ts",
+      "types": "./lib/utils.ts"
+    }
+  },
+  "files": [
+    "index.ts",
+    "components",
+    "lib"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "lucide-react": "^0.563.0",
+    "radix-ui": "^1.4.3",
+    "tailwind-merge": "^3.4.0"
+  }
+}
