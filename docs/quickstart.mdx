@@ -1,0 +1,297 @@
+---
+title: "Quickstart"
+description: "Install better-cmdk and build a command palette with AI chat"
+---
+
+## 1. Install
+
+<CodeGroup>
+```bash npm
+npm install better-cmdk
+```
+```bash pnpm
+pnpm add better-cmdk
+```
+```bash bun
+bun add better-cmdk
+```
+</CodeGroup>
+
+### Peer dependencies
+
+better-cmdk requires React 18+ and Tailwind CSS v4:
+
+```bash
+npm install react react-dom tailwindcss
+```
+
+For AI chat, you'll also need the Vercel AI SDK:
+
+```bash
+npm install ai @ai-sdk/react @ai-sdk/openai
+```
+
+## 2. Configure Tailwind CSS v4
+
+Add better-cmdk to your Tailwind sources in your main CSS file:
+
+```css
+@import "tailwindcss";
+@source "node_modules/better-cmdk";
+```
+
+Then add the required CSS variables for the shadcn/ui design tokens:
+
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 5.9% 10%;
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+}
+```
+
+## 3. Basic command palette
+
+Start with a simple command palette — no AI, just fuzzy search:
+
+```tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import {
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandSeparator,
+  CommandShortcut,
+} from "better-cmdk";
+
+export function CommandPalette() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
+  return (
+    <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandInput placeholder="Type a command or search..." />
+      <CommandList>
+        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandGroup heading="Suggestions">
+          <CommandItem>Calendar</CommandItem>
+          <CommandItem>Search</CommandItem>
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup heading="Settings">
+          <CommandItem>
+            Profile
+            <CommandShortcut>⌘P</CommandShortcut>
+          </CommandItem>
+          <CommandItem>
+            Settings
+            <CommandShortcut>⌘S</CommandShortcut>
+          </CommandItem>
+        </CommandGroup>
+      </CommandList>
+    </CommandDialog>
+  );
+}
+```
+
+This gives you a `⌘K`-triggered modal with fuzzy search filtering, keyboard navigation, and grouped commands.
+
+## 4. Add AI chat
+
+Upgrade to `CommandMenu` to get the dual-mode command + chat interface. This requires a streaming API endpoint.
+
+### Set up the API route
+
+Create a streaming chat endpoint. Here's a Next.js example using the Vercel AI SDK with OpenAI:
+
+```tsx
+// app/api/chat/route.ts
+import { openai } from "@ai-sdk/openai";
+import { streamText, type UIMessage, convertToModelMessages } from "ai";
+
+export async function POST(req: Request) {
+  const { messages }: { messages: UIMessage[] } = await req.json();
+
+  const result = streamText({
+    model: openai("gpt-4o-mini"),
+    messages: await convertToModelMessages(messages),
+    system:
+      "You are a helpful assistant in a command palette. Keep responses concise.",
+  });
+
+  return result.toUIMessageStreamResponse();
+}
+```
+
+### Use CommandMenu
+
+Replace `CommandDialog` with `CommandMenu` and point it at your API endpoint:
+
+```tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import {
+  CommandMenu,
+  CommandMenuInput,
+  CommandMenuList,
+  CommandMenuEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandShortcut,
+} from "better-cmdk";
+
+export function CommandPalette() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
+  return (
+    <CommandMenu
+      open={open}
+      onOpenChange={setOpen}
+      chatEndpoint="/api/chat"
+    >
+      <CommandMenuInput placeholder="Search or ask AI..." showSendButton />
+      <CommandMenuList>
+        <CommandMenuEmpty />
+        <CommandGroup heading="Actions">
+          <CommandItem onSelect={() => console.log("Profile")}>
+            Profile
+            <CommandShortcut>⌘P</CommandShortcut>
+          </CommandItem>
+          <CommandItem onSelect={() => console.log("Settings")}>
+            Settings
+            <CommandShortcut>⌘S</CommandShortcut>
+          </CommandItem>
+        </CommandGroup>
+      </CommandMenuList>
+    </CommandMenu>
+  );
+}
+```
+
+Now your command palette has two modes:
+
+- **Command mode** — type to fuzzy-search commands. If nothing matches, an "Ask AI" option appears.
+- **Chat mode** — select "Ask AI" or press `⌘Enter` to switch. Type a question and get a streaming AI response.
+
+Press `Escape` in chat mode to return to command mode.
+
+## 5. Use with modifywithai.com
+
+[modifywithai.com](https://modifywithai.com) is an AI agent platform that can take actions in your app. You tell it what actions are available (e.g. "toggle dark mode", "navigate to settings"), and the agent can invoke them on behalf of the user — with approval gates so users stay in control.
+
+To connect modifywithai to your command palette, pass an `ExternalChat` object via the `chat` prop. The key field is `availableActions` — this is where you define the specific operations your app supports:
+
+```tsx
+import {
+  CommandMenu,
+  CommandMenuInput,
+  CommandMenuList,
+  CommandMenuEmpty,
+} from "better-cmdk";
+import type { ExternalChat, CommandAction } from "better-cmdk";
+
+// Define the actions available in your app
+const actions: CommandAction[] = [
+  {
+    name: "toggleDarkMode",
+    label: "Toggle dark mode",
+    execute: () => document.documentElement.classList.toggle("dark"),
+  },
+  {
+    name: "navigateTo",
+    label: "Go to page",
+    options: { path: { type: "string", required: true } },
+    execute: (opts) => { window.location.href = opts.path as string },
+  },
+];
+
+// Connect to modifywithai
+const chat: ExternalChat = {
+  messages,              // UIMessage[] — conversation history from modifywithai
+  sendMessage: (msg) => { /* forward to modifywithai agent */ },
+  status: "ready",       // "ready" | "submitted" | "streaming" | "error"
+  error: null,
+  addToolApprovalResponse: (response) => { /* approve/reject agent actions */ },
+  availableActions: actions,  // Tell the agent what it can do in your app
+};
+
+<CommandMenu open={open} onOpenChange={setOpen} chat={chat}>
+  <CommandMenuInput placeholder="Search or ask AI..." showSendButton />
+  <CommandMenuList>
+    <CommandMenuEmpty />
+    {/* Your command groups */}
+  </CommandMenuList>
+</CommandMenu>
+```
+
+The `availableActions` serve double duty — they appear as searchable commands in command mode, and the modifywithai agent knows it can invoke them in chat mode (with user approval).
+
+The `ExternalChat` interface:
+
+```tsx
+interface ExternalChat {
+  messages: UIMessage[];
+  sendMessage: (message: { text: string }) => void;
+  status: "ready" | "submitted" | "streaming" | "error";
+  error: Error | null;
+  addToolApprovalResponse?: (response: {
+    id: string;
+    approved: boolean;
+  }) => void;
+  availableActions?: CommandAction[];
+}
+```

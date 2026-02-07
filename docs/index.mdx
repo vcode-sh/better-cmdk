@@ -1,0 +1,79 @@
+---
+title: "better-cmdk"
+description: "A beautiful, AI-powered command palette for React"
+---
+
+## What is better-cmdk?
+
+**better-cmdk** is a React component library for building command palettes with built-in AI chat. It extends [cmdk](https://github.com/pacocoursey/cmdk) with streaming AI conversations, tool approval workflows, and dynamic form rendering — all styled with Tailwind CSS v4 and the [shadcn/ui](https://ui.shadcn.com/) design system.
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Install better-cmdk and build your first command palette with AI chat.
+  </Card>
+  <Card title="Extending" icon="puzzle-piece" href="/extending">
+    Define actions, customize theming, and build advanced integrations.
+  </Card>
+</CardGroup>
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Dual-mode interface" icon="arrows-left-right">
+    Seamlessly switch between fuzzy command search and AI conversation in the same palette.
+  </Card>
+  <Card title="AI chat integration" icon="sparkles">
+    Built-in support for the Vercel AI SDK with streaming responses, tool calls, and message threading out of the box.
+  </Card>
+  <Card title="Tool approval" icon="shield-check">
+    Let users approve or reject AI-suggested actions before they execute. Full confirmation UI included.
+  </Card>
+  <Card title="Dynamic forms" icon="rectangle-list">
+    AI can generate forms on the fly using JSON UI definitions. Users fill them out and submit without leaving the palette.
+  </Card>
+  <Card title="Accessible & themeable" icon="palette">
+    Built on Radix UI primitives for accessibility. Fully themeable with CSS variables and Tailwind classes.
+  </Card>
+  <Card title="40+ components" icon="cubes">
+    Command palette, dialogs, chat, messages, confirmations, tasks, forms, buttons — everything you need in one package.
+  </Card>
+</CardGroup>
+
+## How it works
+
+better-cmdk provides two main modes:
+
+**Command mode** — Users press `⌘K` to open a fuzzy-searchable command palette. Define groups of commands with keyboard shortcuts and icons.
+
+**Chat mode** — When no commands match (or the user presses `⌘Enter`), the palette switches to an AI conversation. Messages stream in real-time. The AI can suggest actions that require user approval, render forms, and execute tools.
+
+```tsx
+import { CommandMenu, CommandMenuInput, CommandMenuList, CommandMenuEmpty } from "better-cmdk";
+
+<CommandMenu open={open} onOpenChange={setOpen} chatEndpoint="/api/chat">
+  <CommandMenuInput placeholder="Search or ask AI..." showSendButton />
+  <CommandMenuList>
+    <CommandMenuEmpty />
+    {/* Your command groups here */}
+  </CommandMenuList>
+</CommandMenu>
+```
+
+## Architecture
+
+better-cmdk supports two integration patterns:
+
+| Pattern | How it works |
+|---------|-------------|
+| **Built-in chat** | Pass `chatEndpoint="/api/chat"` — better-cmdk handles streaming internally using `useChat()` from the Vercel AI SDK |
+| **External chat** | Pass a `chat` prop with the `ExternalChat` interface to connect your own chat system or agent platform like [modifywithai.com](https://modifywithai.com) |
+
+With either approach, you can define **actions** — the specific operations available in your app (e.g. "toggle dark mode", "navigate to page"). These actions appear as searchable commands and can be invoked by the AI agent through [modifywithai.com](https://modifywithai.com) or your own backend.
+
+## Tech stack
+
+- [cmdk](https://github.com/pacocoursey/cmdk) — command palette primitive
+- [Radix UI](https://www.radix-ui.com/) — accessible headless components
+- [Tailwind CSS v4](https://tailwindcss.com/) — utility-first styling
+- [Vercel AI SDK](https://ai-sdk.dev/) — streaming AI chat
+- [shadcn/ui](https://ui.shadcn.com/) — design tokens and theme system

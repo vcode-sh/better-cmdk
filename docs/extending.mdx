@@ -1,0 +1,317 @@
+---
+title: "Extending"
+description: "Define actions, customize theming, and build advanced integrations"
+---
+
+## Defining actions
+
+Actions are commands that appear in the palette and can also be triggered by the AI agent. Define them with the `CommandAction` interface and pass them to `CommandMenuList`:
+
+```tsx
+import { CommandMenu, CommandMenuInput, CommandMenuList, CommandMenuEmpty } from "better-cmdk";
+import type { CommandAction } from "better-cmdk";
+
+const actions: CommandAction[] = [
+  {
+    name: "updateTheme",
+    label: "Change app theme",
+    options: {
+      theme: { type: "string", description: "light or dark", required: true },
+    },
+    execute: (opts) => {
+      document.documentElement.classList.toggle("dark", opts.theme === "dark");
+    },
+  },
+  {
+    name: "navigateTo",
+    label: "Go to page",
+    options: {
+      path: { type: "string", required: true },
+    },
+    execute: (opts) => {
+      window.location.href = opts.path as string;
+    },
+  },
+];
+
+<CommandMenu open={open} onOpenChange={setOpen} chatEndpoint="/api/chat">
+  <CommandMenuInput placeholder="Search or ask AI..." showSendButton />
+  <CommandMenuList actions={actions} actionsHeading="Actions">
+    <CommandMenuEmpty />
+  </CommandMenuList>
+</CommandMenu>
+```
+
+The `CommandAction` interface:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `name` | `string` | Unique action identifier |
+| `label` | `string?` | Display label (falls back to `name`) |
+| `options` | `Record<string, CommandActionOption>?` | Parameters the action accepts |
+| `execute` | `(options: Record<string, unknown>) => void` | Callback when the action runs |
+
+Actions serve double duty:
+- **In command mode** — they appear as searchable items in the palette
+- **In chat mode** — when connected to an agent platform like [modifywithai.com](https://modifywithai.com), pass them as `availableActions` on the `ExternalChat` object so the agent knows what operations your app supports and can invoke them on behalf of the user
+
+## Render function pattern
+
+`CommandMenu` accepts a render function as `children` so you can adapt the UI based on the current mode:
+
+```tsx
+<CommandMenu open={open} onOpenChange={setOpen} chatEndpoint="/api/chat">
+  {({ mode, messages, status, isEnabled }) => (
+    <>
+      <CommandMenuInput placeholder="Search or ask AI..." showSendButton />
+      <CommandMenuList>
+        <CommandMenuEmpty />
+        {mode === "command" && (
+          <CommandGroup heading="Navigation">
+            <CommandItem onSelect={() => router.push("/dashboard")}>
+              Dashboard
+            </CommandItem>
+            <CommandItem onSelect={() => router.push("/settings")}>
+              Settings
+            </CommandItem>
+          </CommandGroup>
+        )}
+      </CommandMenuList>
+    </>
+  )}
+</CommandMenu>
+```
+
+The render function receives:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `mode` | `"command" \| "chat"` | Current mode |
+| `messages` | `UIMessage[]` | Chat message history |
+| `status` | `"idle" \| "submitted" \| "streaming" \| "error"` | Chat status |
+| `isEnabled` | `boolean` | Whether AI chat is configured |
+
+## Tool approval workflow
+
+When the AI agent wants to perform an action, better-cmdk can show a confirmation dialog before executing. This is built on the `Confirmation` component family.
+
+The flow:
+
+1. The AI sends a `tool-performActions` message part listing the actions it wants to run
+2. `AssistantMessages` renders a `Confirmation` dialog showing the actions
+3. The user clicks **Approve** or **Deny**
+4. `addToolApprovalResponse({ id, approved: true/false })` sends the decision back to the AI
+
+This happens automatically when you use `AssistantMessages` (which `CommandMenuList` uses internally in chat mode). If you're building a custom chat UI, you can compose the confirmation components yourself:
+
+```tsx
+import {
+  Confirmation,
+  ConfirmationTitle,
+  ConfirmationRequest,
+  ConfirmationAccepted,
+  ConfirmationRejected,
+  ConfirmationActions,
+  ConfirmationAction,
+} from "better-cmdk";
+
+<Confirmation state={toolState} approval={approval}>
+  <ConfirmationTitle>Confirm action</ConfirmationTitle>
+
+  <ConfirmationRequest>
+    {/* Shown while waiting for user decision */}
+    <p>The AI wants to update your theme to dark mode.</p>
+  </ConfirmationRequest>
+
+  <ConfirmationAccepted>
+    <p>Action approved</p>
+  </ConfirmationAccepted>
+
+  <ConfirmationRejected>
+    <p>Action cancelled</p>
+  </ConfirmationRejected>
+
+  <ConfirmationActions>
+    <ConfirmationAction variant="outline" onClick={() => deny(approval.id)}>
+      Deny
+    </ConfirmationAction>
+    <ConfirmationAction onClick={() => approve(approval.id)}>
+      Approve
+    </ConfirmationAction>
+  </ConfirmationActions>
+</Confirmation>
+```
+
+The `Confirmation` component renders conditionally based on state — amber during `approval-requested`, green when approved, red when rejected.
+
+## Context and hooks
+
+For advanced use cases, you can access the command menu state directly via context:
+
+```tsx
+import { CommandMenuProvider, useCommandMenuContext } from "better-cmdk";
+
+function MyCustomInput() {
+  const {
+    mode,           // "command" | "chat"
+    inputValue,     // Current input text
+    setInputValue,  // Update input
+    switchToChat,   // Switch to chat mode (optional initial query)
+    switchToCommand, // Switch back to command mode
+    sendMessage,    // Send a chat message
+    messages,       // Chat history
+    status,         // "idle" | "submitted" | "streaming" | "error"
+    isLoading,      // true when submitted or streaming
+    isEnabled,      // true when chat is configured
+  } = useCommandMenuContext();
+
+  return <input value={inputValue} onChange={(e) => setInputValue(e.target.value)} />;
+}
+```
+
+The provider is set up automatically by `CommandMenu`. If you need to use the context outside of `CommandMenu`, wrap your tree with `CommandMenuProvider`:
+
+```tsx
+<CommandMenuProvider chatEndpoint="/api/chat" onModeChange={(mode) => console.log(mode)}>
+  <MyCustomInput />
+  <MyCustomList />
+</CommandMenuProvider>
+```
+
+### Provider props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `chatEndpoint` | `string?` | API endpoint for internal Vercel AI SDK chat |
+| `chat` | `ExternalChat?` | External chat provider (overrides `chatEndpoint`) |
+| `onModeChange` | `(mode: CommandMenuMode) => void` | Called when mode switches |
+| `onOpenChange` | `(open: boolean) => void` | Called when the menu opens/closes |
+
+## Theming and styling
+
+### CSS variables
+
+better-cmdk uses shadcn/ui design tokens via CSS variables. Override them to match your brand:
+
+```css
+:root {
+  --primary: 240 5.9% 10%;          /* Button and accent color */
+  --primary-foreground: 0 0% 98%;   /* Text on primary */
+  --popover: 0 0% 100%;             /* Palette background */
+  --muted: 240 4.8% 95.9%;          /* Subtle backgrounds */
+  --border: 240 5.9% 90%;           /* Border color */
+  --radius: 0.5rem;                 /* Corner radius */
+}
+```
+
+For dark mode, redefine the variables inside a `.dark` class or `@media (prefers-color-scheme: dark)` block.
+
+### className props
+
+Every component accepts a `className` prop for one-off overrides:
+
+```tsx
+<CommandMenuInput className="text-lg" placeholder="Search..." />
+```
+
+### cn() utility
+
+Use the `cn()` utility to merge Tailwind classes safely:
+
+```tsx
+import { cn } from "better-cmdk";
+
+<div className={cn("p-4", isActive && "bg-primary text-primary-foreground")} />
+```
+
+## Component reference
+
+All components exported from `better-cmdk`:
+
+### Command palette
+
+| Component | Description |
+|-----------|-------------|
+| `Command` | Root command primitive |
+| `CommandDialog` | Modal command palette |
+| `CommandInput` | Search input with icon |
+| `CommandList` | Scrollable results container |
+| `CommandEmpty` | "No results" state |
+| `CommandGroup` | Groups commands with a heading |
+| `CommandItem` | Selectable command row |
+| `CommandShortcut` | Keyboard shortcut hint |
+| `CommandSeparator` | Visual divider |
+
+### Command menu (AI-enabled)
+
+| Component | Description |
+|-----------|-------------|
+| `CommandMenu` | Dual-mode command + chat palette |
+| `CommandMenuInput` | Input with mode-aware icon and send button |
+| `CommandMenuList` | List that switches between commands and chat |
+| `CommandMenuEmpty` | "Ask AI" fallback when no commands match |
+| `CommandMenuContent` | Dialog content wrapper |
+
+### Chat
+
+| Component | Description |
+|-----------|-------------|
+| `ChatMessageList` | Auto-scrolling message container |
+| `ChatLoading` | Streaming indicator |
+| `ChatEmpty` | Empty chat state |
+
+### Messages
+
+| Component | Description |
+|-----------|-------------|
+| `Message` | Message wrapper (user or assistant) |
+| `MessageContent` | Message body |
+| `MessageResponse` | Markdown-rendered response (uses Streamdown) |
+| `AssistantMessages` | Full message thread with tool/form handling |
+
+### Confirmation
+
+| Component | Description |
+|-----------|-------------|
+| `Confirmation` | Root wrapper — renders based on approval state |
+| `ConfirmationTitle` | Heading text |
+| `ConfirmationRequest` | Shown during approval request |
+| `ConfirmationAccepted` | Shown when approved |
+| `ConfirmationRejected` | Shown when rejected |
+| `ConfirmationActions` | Button container |
+| `ConfirmationAction` | Approve/deny button |
+
+### Task
+
+| Component | Description |
+|-----------|-------------|
+| `Task` | Collapsible task wrapper |
+| `TaskTrigger` | Header with title and icon |
+| `TaskContent` | Expandable content area |
+| `TaskItem` | Individual task line |
+| `TaskItemFile` | File badge |
+
+### Forms
+
+| Component | Description |
+|-----------|-------------|
+| `AssistantFormRenderer` | Renders AI-generated forms from JSON UI trees |
+| `defaultFormRegistry` | Default component registry for form fields |
+
+### Utilities
+
+| Export | Description |
+|--------|-------------|
+| `Button` | Styled button with variant and size props |
+| `buttonVariants` | CVA variant definitions |
+| `cn` | Class name merger (`clsx` + `tailwind-merge`) |
+| `Dialog` / `DialogContent` / etc. | Radix UI dialog primitives |
+| `Collapsible` / `CollapsibleTrigger` / `CollapsibleContent` | Radix UI collapsible |
+
+### Context and hooks
+
+| Export | Description |
+|--------|-------------|
+| `CommandMenuProvider` | Context provider for command menu state |
+| `CommandMenuContext` | Raw React context |
+| `useCommandMenuContext` | Hook to access command menu state |
