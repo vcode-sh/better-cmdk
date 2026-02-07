@@ -16,14 +16,14 @@
     }
   },
   "files": [
-    "index.ts",
-    "components",
-    "context",
-    "hooks",
-    "lib"
+    "dist"
   ],
+  "scripts": {
+    "build": "bun run --bun tsdown"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "tsdown": "^0.20.3"
   },
   "peerDependencies": {
     "react": "^18 || ^19",
