@@ -28,44 +28,113 @@ export { Button, buttonVariants } from "./components/ui/button"
 
 export { cn } from "./lib/utils"
 
-// AI Command components
+// Command Menu components
 export {
-  AICommandDialog,
-  AICommandDialogContent,
-  AICommandInput,
-  AICommandEmpty,
-  AICommandList,
-} from "./components/ui/ai-command"
+  CommandMenu,
+  CommandMenuContent,
+  CommandMenuInput,
+  CommandMenuEmpty,
+  CommandMenuList,
+} from "./components/ui/command-menu"
 export type {
-  AICommandDialogProps,
-  AICommandInputProps,
-  AICommandEmptyProps,
-} from "./components/ui/ai-command"
+  CommandMenuProps,
+  CommandMenuInputProps,
+  CommandMenuEmptyProps,
+  CommandMenuListProps,
+  CommandAction,
+  CommandActionOption,
+} from "./components/ui/command-menu"
 
 // Chat components
 export {
-  ChatMessage,
   ChatMessageList,
   ChatLoading,
   ChatEmpty,
 } from "./components/ui/chat"
 export type {
-  ChatMessageProps,
   ChatMessageListProps,
   ChatLoadingProps,
   ChatEmptyProps,
 } from "./components/ui/chat"
 
-// AI Command context and hooks
+// Rich message components
 export {
-  AICommandProvider,
-  AICommandContext,
-  useAICommandContext,
-} from "./context/ai-command-context"
+  Message,
+  MessageContent,
+  MessageResponse,
+} from "./components/ui/message"
 export type {
-  AICommandMode,
-  AICommandStatus,
-  AICommandContextValue,
-  AICommandProviderProps,
-} from "./context/ai-command-context"
+  MessageProps,
+  MessageContentProps,
+  MessageResponseProps,
+} from "./components/ui/message"
 
+export {
+  AssistantMessages,
+} from "./components/ui/assistant-messages"
+export type {
+  AssistantMessagesProps,
+} from "./components/ui/assistant-messages"
+
+export {
+  Confirmation,
+  ConfirmationTitle,
+  ConfirmationRequest,
+  ConfirmationAccepted,
+  ConfirmationRejected,
+  ConfirmationActions,
+  ConfirmationAction,
+} from "./components/ui/confirmation"
+export type {
+  ConfirmationProps,
+  ConfirmationTitleProps,
+  ConfirmationRequestProps,
+  ConfirmationAcceptedProps,
+  ConfirmationRejectedProps,
+  ConfirmationActionsProps,
+  ConfirmationActionProps,
+  ToolUIPartApproval,
+} from "./components/ui/confirmation"
+
+export {
+  Task,
+  TaskTrigger,
+  TaskContent,
+  TaskItem,
+  TaskItemFile,
+} from "./components/ui/task"
+export type {
+  TaskProps,
+  TaskTriggerProps,
+  TaskContentProps,
+  TaskItemProps,
+  TaskItemFileProps,
+} from "./components/ui/task"
+
+export {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "./components/ui/collapsible"
+
+export {
+  AssistantFormRenderer,
+  defaultFormRegistry,
+} from "./components/ui/form-renderer"
+export type {
+  AssistantFormRendererProps,
+} from "./components/ui/form-renderer"
+
+// Command Menu context and hooks
+export {
+  CommandMenuProvider,
+  CommandMenuContext,
+  useCommandMenuContext,
+} from "./context/command-menu-context"
+export type {
+  CommandMenuMode,
+  CommandMenuStatus,
+  CommandMenuContextValue,
+  CommandMenuProviderProps,
+  ExternalChat,
+} from "./context/command-menu-context"

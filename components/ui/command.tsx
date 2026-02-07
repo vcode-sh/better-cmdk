@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Command as CommandPrimitive } from "cmdk"
-import { SearchIcon } from "lucide-react"
-import { Dialog as DialogPrimitive } from "radix-ui"
+import * as React from "react";
+import { Command as CommandPrimitive } from "cmdk";
+import { SearchIcon } from "lucide-react";
+import { Dialog as DialogPrimitive } from "radix-ui";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 import {
   Dialog,
   DialogDescription,
   DialogHeader,
   DialogPortal,
   DialogTitle,
-} from "./dialog"
+} from "./dialog";
 
 function Command({
   className,
@@ -23,11 +23,11 @@ function Command({
       data-slot="command"
       className={cn(
         "bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CommandDialogContent({
@@ -41,14 +41,14 @@ function CommandDialogContent({
         data-slot="dialog-content"
         className={cn(
           "bg-background fixed top-1/3 left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-xl border-none p-2 shadow-2xl ring-4 ring-neutral-200/80 duration-200 outline-none sm:max-w-lg dark:bg-neutral-900 dark:ring-neutral-800",
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </DialogPrimitive.Content>
     </DialogPortal>
-  )
+  );
 }
 
 function CommandDialog({
@@ -58,9 +58,9 @@ function CommandDialog({
   className,
   ...props
 }: React.ComponentProps<typeof Dialog> & {
-  title?: string
-  description?: string
-  className?: string
+  title?: string;
+  description?: string;
+  className?: string;
 }) {
   return (
     <Dialog {...props}>
@@ -69,14 +69,12 @@ function CommandDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <Command
-          className="**:data-[slot=command-input-wrapper]:bg-input/50 **:data-[slot=command-input-wrapper]:border-input rounded-none bg-transparent **:data-[slot=command-input]:!h-9 **:data-[slot=command-input]:py-0 **:data-[slot=command-input-wrapper]:mb-0 **:data-[slot=command-input-wrapper]:!h-9 **:data-[slot=command-input-wrapper]:rounded-md **:data-[slot=command-input-wrapper]:border"
-        >
+        <Command className="**:data-[slot=command-input-wrapper]:bg-input/50 **:data-[slot=command-input-wrapper]:border-input rounded-none bg-transparent **:data-[slot=command-input]:!h-9 **:data-[slot=command-input]:py-0 **:data-[slot=command-input-wrapper]:mb-0 **:data-[slot=command-input-wrapper]:!h-9 **:data-[slot=command-input-wrapper]:rounded-md **:data-[slot=command-input-wrapper]:border">
           {children}
         </Command>
       </CommandDialogContent>
     </Dialog>
-  )
+  );
 }
 
 function CommandInput({
@@ -86,19 +84,19 @@ function CommandInput({
   return (
     <div
       data-slot="command-input-wrapper"
-      className="flex h-9 items-center gap-2 border-b px-3"
+      className="order-2 flex h-9 items-center gap-2 border-t px-3"
     >
       <SearchIcon className="size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(
           "placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
-          className
+          className,
         )}
         {...props}
       />
     </div>
-  )
+  );
 }
 
 function CommandList({
@@ -109,12 +107,12 @@ function CommandList({
     <CommandPrimitive.List
       data-slot="command-list"
       className={cn(
-        "max-h-[300px] overflow-x-hidden overflow-y-auto",
-        className
+        "order-1 max-h-[300px] min-h-0 flex-1 overflow-x-hidden overflow-y-auto",
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CommandEmpty({
@@ -124,10 +122,13 @@ function CommandEmpty({
   return (
     <CommandPrimitive.Empty
       data-slot="command-empty"
-      className={cn("text-muted-foreground py-6 text-center text-sm", className)}
+      className={cn(
+        "text-muted-foreground py-6 text-center text-sm",
+        className,
+      )}
       {...props}
     />
-  )
+  );
 }
 
 function CommandGroup({
@@ -138,12 +139,12 @@ function CommandGroup({
     <CommandPrimitive.Group
       data-slot="command-group"
       className={cn(
-        "text-foreground !p-0 [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden [&_[cmdk-group-heading]]:scroll-mt-16 [&_[cmdk-group-heading]]:!p-3 [&_[cmdk-group-heading]]:!pb-1 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium",
-        className
+        "text-foreground !p-0 [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden [&_[cmdk-group-heading]]:scroll-mt-16 [&_[cmdk-group-heading]]:pt-0! [&_[cmdk-group-heading]]:!p-3  [&_[cmdk-group-heading]]:!pb-1 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium",
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CommandSeparator({
@@ -156,7 +157,7 @@ function CommandSeparator({
       className={cn("bg-border -mx-1 h-px", className)}
       {...props}
     />
-  )
+  );
 }
 
 function CommandItem({
@@ -168,11 +169,11 @@ function CommandItem({
       data-slot="command-item"
       className={cn(
         "data-[selected=true]:border-input data-[selected=true]:bg-input/50 [&_svg:not([class*='text-'])]:text-muted-foreground relative flex h-9 cursor-default items-center gap-2 rounded-md border border-transparent px-3 text-sm font-medium outline-hidden select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CommandShortcut({
@@ -184,11 +185,11 @@ function CommandShortcut({
       data-slot="command-shortcut"
       className={cn(
         "text-muted-foreground ml-auto text-xs tracking-widest",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -202,4 +203,4 @@ export {
   CommandItem,
   CommandShortcut,
   CommandSeparator,
-}
+};
