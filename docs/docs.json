@@ -15,11 +15,7 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": [
-              "index",
-              "quickstart",
-              "extending"
-            ]
+            "pages": ["index", "quickstart", "extending"]
           }
         ]
       }
@@ -28,7 +24,7 @@
       "anchors": [
         {
           "anchor": "GitHub",
-          "href": "https://github.com/modifywithai/better-cmdk",
+          "href": "https://github.com/ModifyWithAI/better-cmdk",
           "icon": "github"
         },
         {
@@ -40,8 +36,11 @@
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/logo.svg",
+    "dark": "/logo/logo.svg"
+  },
+  "fonts": {
+    "family": "Geist"
   },
   "navbar": {
     "links": [
@@ -57,18 +56,11 @@
     }
   },
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "cursor",
-      "vscode"
-    ]
+    "options": ["copy", "view", "chatgpt", "claude", "cursor", "vscode"]
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/modifywithai/better-cmdk"
+      "github": "https://github.com/ModifyWithAI/better-cmdk"
     }
   }
 }

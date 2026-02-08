@@ -285,6 +285,16 @@ The component uses Tailwind CSS with the shadcn/ui design tokens. Customize by:
 2. Passing `className` props to components
 3. Using the `cn()` utility for conditional classes
 
+## Telemetry
+
+better-cmdk collects anonymous error and performance data via [Sentry](https://sentry.io) to help improve reliability. No personally identifiable information (PII) is collected — user data, cookies, headers, and breadcrumbs are stripped before transmission.
+
+To opt out, set the environment variable:
+
+```
+BETTER_CMDK_TELEMETRY_DISABLED=1
+```
+
 ## License
 
 MIT
