@@ -1,6 +1,6 @@
 "use client"
 
-import type { UITree } from "@json-render/core"
+import type { Spec } from "@json-render/core"
 import type { ComponentRegistry } from "@json-render/react"
 import { JSONUIProvider, Renderer } from "@json-render/react"
 import { useCallback, useMemo } from "react"
@@ -17,7 +17,7 @@ const CancelActionSchema = z.object({
 })
 
 export interface AssistantFormRendererProps {
-    ui: UITree
+    ui: Spec
     context?: Record<string, unknown>
     onSubmit: (formId: string, data: Record<string, string>) => void
     onCancel?: (formId: string) => void
@@ -69,10 +69,10 @@ export function AssistantFormRenderer({
     return (
         <JSONUIProvider
             registry={registry}
-            initialData={context}
-            actionHandlers={actionHandlers}
+            initialState={context}
+            handlers={actionHandlers}
         >
-            <Renderer tree={ui} registry={registry} />
+            <Renderer spec={ui} registry={registry} />
         </JSONUIProvider>
     )
 }

@@ -4,6 +4,7 @@ import type {
     ComponentRegistry,
     ComponentRenderProps,
 } from "@json-render/react"
+import { useActions } from "@json-render/react"
 import type { KeyboardEvent } from "react"
 import { cn } from "../../lib/utils"
 
@@ -14,10 +15,10 @@ function stopKeyboardPropagation(e: KeyboardEvent) {
 export function FormRenderer({
     element,
     children,
-    onAction,
 }: ComponentRenderProps<{ id: string; title?: string; submitLabel?: string }>) {
     const props = element.props ?? {}
     const { id = "form", title, submitLabel = "Submit" } = props
+    const { execute } = useActions()
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -28,10 +29,7 @@ export function FormRenderer({
                 data[key] = value
             }
         })
-        onAction?.({
-            name: "submit",
-            params: { formId: id, data },
-        })
+        execute({ action: "submit", params: { formId: id, data } })
     }
 
     return (
@@ -61,8 +59,8 @@ export function FormRenderer({
                                 "disabled:pointer-events-none disabled:opacity-50",
                             )}
                             onClick={() =>
-                                onAction?.({
-                                    name: "cancel",
+                                execute({
+                                    action: "cancel",
                                     params: { formId: id },
                                 })
                             }
