@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What is this?
 
-`better-cmdk` is a React command palette component library (published to npm) with optional AI chat integration. It's a local fork of [cmdk](https://github.com/dip/cmdk) with a redesigned UI, built on Radix UI and styled with Tailwind CSS v4 / shadcn/ui design tokens.
+`better-cmdk` is a React command palette component library (published to npm) with optional AI chat integration. It's a local fork of [cmdk](https://github.com/dip/cmdk) with a redesigned UI, built on Base UI (`@base-ui/react`) and styled with Tailwind CSS v4 / shadcn/ui design tokens.
 
 ## Commands
 

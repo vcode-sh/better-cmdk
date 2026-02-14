@@ -1,5 +1,6 @@
 "use client"
 
+import type { DialogRootChangeEventDetails } from "@base-ui/react/dialog"
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import type { UIMessage } from "ai"
 import { ArrowUpIcon, MessageCircleIcon } from "lucide-react"
@@ -209,17 +210,14 @@ function CommandMenuInner({
     modeRef.current = mode
 
     const handleOpenChange = React.useCallback(
-        (
-            open: boolean,
-            eventDetails?: { reason?: string; cancel?: () => void },
-        ) => {
+        (open: boolean, eventDetails: DialogRootChangeEventDetails) => {
             // Intercept escape in chat mode: switch to command instead of closing
             if (
                 !open &&
-                eventDetails?.reason === "escape-key" &&
+                eventDetails.reason === "escape-key" &&
                 modeRef.current === "chat"
             ) {
-                eventDetails.cancel?.()
+                eventDetails.cancel()
                 switchToCommand()
                 return
             }
@@ -260,14 +258,14 @@ function CommandMenuInner({
         const down = (e: globalThis.KeyboardEvent) => {
             if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault()
-                handleOpenChange(false)
+                onOpenChange?.(false)
             }
         }
         if (props.open) {
             document.addEventListener("keydown", down)
             return () => document.removeEventListener("keydown", down)
         }
-    }, [props.open, handleOpenChange])
+    }, [props.open, onOpenChange])
 
     return (
         <Dialog {...props} onOpenChange={handleOpenChange}>
