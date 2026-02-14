@@ -8,7 +8,6 @@ import {
     type ChatConversation,
     useChatHistory,
 } from "../hooks/use-chat-history"
-import { captureException, initTelemetry, startSpan } from "../lib/telemetry"
 
 export type CommandMenuMode = "command" | "chat"
 
@@ -96,9 +95,6 @@ export function CommandMenuProvider({
 
     const hasExternalChat = Boolean(externalChat)
 
-    React.useEffect(() => {
-        initTelemetry()
-    }, [])
 
     const transport = React.useMemo(() => {
         if (hasExternalChat || !chatEndpoint) return undefined
@@ -111,9 +107,6 @@ export function CommandMenuProvider({
                 ? {
                       transport,
                       onError: (err: Error) => {
-                          captureException(err, {
-                              source: "internalChat.onError",
-                          })
                           setStatus("error")
                           setError(err)
                       },
@@ -157,12 +150,10 @@ export function CommandMenuProvider({
     const switchToChat = React.useCallback(
         (initialQuery?: string) => {
             if (!isEnabled) return
-            startSpan("switchToChat", "ui.action", () => {
-                setMode("chat")
-                if (initialQuery) {
-                    setInputValue(initialQuery)
-                }
-            })
+            setMode("chat")
+            if (initialQuery) {
+                setInputValue(initialQuery)
+            }
         },
         [isEnabled, setMode],
     )
@@ -177,23 +168,16 @@ export function CommandMenuProvider({
     const sendMessage = React.useCallback(
         async (content: string) => {
             if (!content.trim()) return
-            await startSpan("sendMessage", "function", async () => {
-                try {
-                    const ext = externalChatRef.current
-                    if (ext) {
-                        setInputValue("")
-                        ext.sendMessage({ text: content.trim() })
-                        return
-                    }
-                    if (!transport) return
-                    setStatus("submitted")
-                    setInputValue("")
-                    await internalChat.sendMessage({ text: content.trim() })
-                } catch (err) {
-                    captureException(err, { source: "sendMessage" })
-                    throw err
-                }
-            })
+            const ext = externalChatRef.current
+            if (ext) {
+                setInputValue("")
+                ext.sendMessage({ text: content.trim() })
+                return
+            }
+            if (!transport) return
+            setStatus("submitted")
+            setInputValue("")
+            await internalChat.sendMessage({ text: content.trim() })
         },
         [internalChat, transport],
     )

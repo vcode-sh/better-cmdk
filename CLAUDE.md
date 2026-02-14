@@ -38,14 +38,11 @@ There are no tests in this repo currently. Use `bun test` if tests are added.
    - `confirmation.tsx` — Tool approval UI for agentic AI actions.
    - `form-renderer.tsx`, `form-components.tsx` — JSON-driven form rendering for AI tool parameters (uses `@json-render/react`).
    - `task.tsx` — Collapsible task/step display for multi-step AI operations.
-   - `telemetry-error-boundary.tsx` — Error boundary that reports to Sentry.
    - `dialog.tsx`, `button.tsx`, `collapsible.tsx`, `kbd.tsx` — Base UI primitives.
 
 3. **`context/command-menu-context.tsx`** — React context provider that manages command/chat mode state, integrates with Vercel AI SDK (`useChat`), handles external chat providers (e.g., modifywithai), and manages chat history. The `CommandMenuProvider` wraps `CommandMenuInner`.
 
 4. **`hooks/use-chat-history.ts`** — localStorage-based chat conversation persistence.
-
-5. **`lib/telemetry.ts`** — Optional Sentry error/performance tracking (opt-out via `BETTER_CMDK_TELEMETRY_DISABLED=1`).
 
 ### Prompts / AGENTS.md
 
@@ -55,7 +52,7 @@ There are no tests in this repo currently. Use `bun test` if tests are added.
 
 - All components use `"use client"` directive (React Server Components compatible).
 - The library supports two chat modes: built-in (via `chatEndpoint` prop + Vercel AI SDK) and external (via `chat` prop compatible with modifywithai's `useAssistant()`).
-- `CommandMenu` wraps everything in `CommandMenuProvider` > `TelemetryErrorBoundary` > `CommandMenuInner`.
+- `CommandMenu` wraps everything in `CommandMenuProvider` > `CommandMenuInner`.
 - Path alias `@/*` maps to repo root (tsconfig `paths`).
 - The `commands` prop takes precedence over `children` when both are provided.
 

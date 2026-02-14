@@ -36,7 +36,6 @@ import {
     DialogPortal,
     DialogTitle,
 } from "./dialog"
-import { TelemetryErrorBoundary } from "./telemetry-error-boundary"
 
 const noopApproval = (_r: { id: string; approved: boolean }) => {}
 
@@ -287,15 +286,13 @@ function CommandMenu({
             historyStorageKey={historyStorageKey}
             maxConversations={maxConversations}
         >
-            <TelemetryErrorBoundary>
-                <CommandMenuInner
-                    onOpenChange={onOpenChange}
-                    commands={commands}
-                    commandsPlaceholder={commandsPlaceholder}
-                    commandsAskAILabel={commandsAskAILabel}
-                    {...props}
-                />
-            </TelemetryErrorBoundary>
+            <CommandMenuInner
+                onOpenChange={onOpenChange}
+                commands={commands}
+                commandsPlaceholder={commandsPlaceholder}
+                commandsAskAILabel={commandsAskAILabel}
+                {...props}
+            />
         </CommandMenuProvider>
     )
 }
