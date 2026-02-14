@@ -47,6 +47,18 @@
             "tailwindDirectives": true
         }
     },
+    "overrides": [
+        {
+            "includes": ["lib/cmdk/**"],
+            "linter": {
+                "rules": {
+                    "a11y": {
+                        "useAriaPropsForRole": "off"
+                    }
+                }
+            }
+        }
+    ],
     "linter": {
         "domains": {
             "project": "none"

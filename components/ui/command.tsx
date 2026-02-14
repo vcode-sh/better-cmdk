@@ -1,7 +1,7 @@
 "use client"
 
+import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { SearchIcon } from "lucide-react"
-import { Dialog as DialogPrimitive } from "radix-ui"
 import * as React from "react"
 import { Command as CommandPrimitive } from "../../lib/cmdk"
 
@@ -35,10 +35,10 @@ function CommandDialogContent({
     className,
     children,
     ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content>) {
+}: React.ComponentProps<typeof DialogPrimitive.Popup>) {
     return (
         <DialogPortal data-slot="dialog-portal">
-            <DialogPrimitive.Content
+            <DialogPrimitive.Popup
                 data-slot="dialog-content"
                 className={cn(
                     "backdrop-blur-xl fixed top-1/3 left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-xl border-none p-2 shadow-2xl ring-0 duration-200 outline-none sm:max-w-lg",
@@ -51,7 +51,7 @@ function CommandDialogContent({
                 {...props}
             >
                 {children}
-            </DialogPrimitive.Content>
+            </DialogPrimitive.Popup>
         </DialogPortal>
     )
 }
@@ -62,10 +62,11 @@ function CommandDialog({
     children,
     className,
     ...props
-}: React.ComponentProps<typeof Dialog> & {
+}: Omit<React.ComponentProps<typeof Dialog>, "children"> & {
     title?: string
     description?: string
     className?: string
+    children?: React.ReactNode
 }) {
     return (
         <Dialog {...props}>

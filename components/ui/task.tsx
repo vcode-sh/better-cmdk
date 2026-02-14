@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronDownIcon, SearchIcon } from "lucide-react"
-import type { ComponentProps, ReactNode } from "react"
+import { type ComponentProps, isValidElement, type ReactNode } from "react"
 import { cn } from "../../lib/utils"
 import {
     Collapsible,
@@ -57,16 +57,21 @@ export function TaskTrigger({
     icon,
     ...props
 }: TaskTriggerProps) {
+    const defaultTrigger = (
+        <div className="flex w-full cursor-pointer items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
+            {icon ?? <SearchIcon className="size-4" />}
+            <p className="text-sm">{title}</p>
+            <ChevronDownIcon className="size-4 transition-transform group-data-[panel-open]:rotate-180" />
+        </div>
+    )
+
     return (
-        <CollapsibleTrigger asChild className="group" {...props}>
-            {children ?? (
-                <div className="flex w-full cursor-pointer items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
-                    {icon ?? <SearchIcon className="size-4" />}
-                    <p className="text-sm">{title}</p>
-                    <ChevronDownIcon className="size-4 transition-transform group-data-[state=open]:rotate-180" />
-                </div>
-            )}
-        </CollapsibleTrigger>
+        <CollapsibleTrigger
+            render={isValidElement(children) ? children : defaultTrigger}
+            nativeButton={false}
+            className="group"
+            {...props}
+        />
     )
 }
 
@@ -81,9 +86,9 @@ export function TaskContent({ children, ...props }: TaskContentProps) {
             data-slot="task-content"
             className={cn(
                 "text-popover-foreground outline-none",
-                "data-[state=closed]:animate-out data-[state=open]:animate-in",
-                "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-                "data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2",
+                "data-closed:animate-out data-open:animate-in",
+                "data-closed:fade-out-0 data-open:fade-in-0",
+                "data-closed:slide-out-to-top-2 data-open:slide-in-from-top-2",
             )}
             {...props}
         >

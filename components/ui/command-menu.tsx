@@ -1,9 +1,9 @@
 "use client"
 
+import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import type { UIMessage } from "ai"
 import { ArrowUpIcon, MessageCircleIcon } from "lucide-react"
 import { motion } from "motion/react"
-import { Dialog as DialogPrimitive } from "radix-ui"
 import * as React from "react"
 import {
     type CommandMenuMode,
@@ -66,7 +66,10 @@ function formatRelativeTime(timestamp: number): string {
 }
 
 interface CommandMenuProps
-    extends Omit<React.ComponentProps<typeof Dialog>, "children"> {
+    extends Omit<
+        React.ComponentProps<typeof Dialog>,
+        "children" | "onOpenChange"
+    > {
     title?: string
     description?: string
     className?: string
@@ -76,6 +79,7 @@ interface CommandMenuProps
     chat?: ExternalChat
     askAILabel?: string
     onModeChange?: (mode: CommandMenuMode) => void
+    onOpenChange?: (open: boolean) => void
     historyStorageKey?: string
     maxConversations?: number
     /** Declarative command definitions. Mutually exclusive with children. */
@@ -101,7 +105,7 @@ function CommandContent({
     borderColor,
     expanded,
     ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
+}: React.ComponentProps<typeof DialogPrimitive.Popup> & {
     corners?: CommandMenuCorners
     borderColor?: string
     expanded?: boolean
@@ -112,7 +116,7 @@ function CommandContent({
                 className="fixed top-1/3 left-[50%] z-50 w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%]"
                 style={{ maxWidth: "45vw" }}
             >
-                <DialogPrimitive.Content
+                <DialogPrimitive.Popup
                     data-slot="dialog-content"
                     className={cn(
                         "backdrop-blur-xl flex flex-col w-full overflow-hidden border border-input p-0 ring-0 outline-none",
@@ -135,7 +139,7 @@ function CommandContent({
                     {...props}
                 >
                     {children}
-                </DialogPrimitive.Content>
+                </DialogPrimitive.Popup>
                 <div className="flex justify-end select-none">
                     <a
                         href="https://better-cmdk.com"
@@ -186,6 +190,7 @@ function CommandMenuInner({
     commands,
     commandsPlaceholder = "Search for commands or ask AI...",
     commandsAskAILabel = "Ask AI",
+    onOpenChange,
     ...props
 }: Omit<CommandMenuProps, "chatEndpoint" | "chat" | "onModeChange">) {
     const {
@@ -200,12 +205,28 @@ function CommandMenuInner({
 
     const expanded = mode === "chat" || inputValue.length > 0
 
+    const modeRef = React.useRef(mode)
+    modeRef.current = mode
+
     const handleOpenChange = React.useCallback(
-        (open: boolean) => {
+        (
+            open: boolean,
+            eventDetails?: { reason?: string; cancel?: () => void },
+        ) => {
+            // Intercept escape in chat mode: switch to command instead of closing
+            if (
+                !open &&
+                eventDetails?.reason === "escape-key" &&
+                modeRef.current === "chat"
+            ) {
+                eventDetails.cancel?.()
+                switchToCommand()
+                return
+            }
             if (open) setInputValue("")
-            props.onOpenChange?.(open)
+            onOpenChange?.(open)
         },
-        [props.onOpenChange, setInputValue],
+        [onOpenChange, setInputValue, switchToCommand],
     )
 
     const renderChildren = () => {
@@ -235,13 +256,6 @@ function CommandMenuInner({
         return children ?? defaultChildren
     }
 
-    const handleEscapeKeyDown = (e: KeyboardEvent) => {
-        if (mode === "chat") {
-            e.preventDefault()
-            switchToCommand()
-        }
-    }
-
     React.useEffect(() => {
         const down = (e: globalThis.KeyboardEvent) => {
             if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -262,7 +276,6 @@ function CommandMenuInner({
                 corners={corners}
                 borderColor={borderColor}
                 expanded={expanded}
-                onEscapeKeyDown={handleEscapeKeyDown}
             >
                 <DialogHeader className="sr-only">
                     <DialogTitle>{title}</DialogTitle>
