@@ -1,6 +1,6 @@
 # better-cmdk
 
-A beautiful command palette component for React, built on [cmdk](https://github.com/dip/cmdk) and [Radix UI](https://www.radix-ui.com/). Styled with Tailwind CSS v4 using the shadcn/ui design system.
+A beautiful command palette component for React, built on [cmdk](https://github.com/dip/cmdk) and [Base UI](https://base-ui.com/). Styled with Tailwind CSS v4 using the shadcn/ui design system.
 
 ## Installation
 
