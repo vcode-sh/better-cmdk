@@ -95,7 +95,6 @@ export function CommandMenuProvider({
 
     const hasExternalChat = Boolean(externalChat)
 
-
     const transport = React.useMemo(() => {
         if (hasExternalChat || !chatEndpoint) return undefined
         return new DefaultChatTransport({ api: chatEndpoint })

@@ -1,20 +1,20 @@
 export type Framework = "nextjs" | "remix" | "tanstack-start" | "vite"
 
 const FRAMEWORK_CONFIG: Record<
-	Framework,
-	{
-		name: string
-		component: string
-		builtInChatRoute: string
-		mwaiAgentsPath: string
-		mwaiNote: string
-		mountLocation: string
-		envFile: string
-	}
+    Framework,
+    {
+        name: string
+        component: string
+        builtInChatRoute: string
+        mwaiAgentsPath: string
+        mwaiNote: string
+        mountLocation: string
+        envFile: string
+    }
 > = {
-	nextjs: {
-		name: "Next.js (App Router)",
-		component: `\`\`\`tsx
+    nextjs: {
+        name: "Next.js (App Router)",
+        component: `\`\`\`tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -72,7 +72,7 @@ export function CommandPalette() {
   )
 }
 \`\`\``,
-		builtInChatRoute: `\`\`\`ts
+        builtInChatRoute: `\`\`\`ts
 // app/api/chat/route.ts
 import { openai } from "@ai-sdk/openai"
 import { streamText, convertToModelMessages } from "ai"
@@ -88,16 +88,16 @@ export async function POST(req: Request) {
   return result.toUIMessageStreamResponse()
 }
 \`\`\``,
-		mwaiAgentsPath: "node_modules/modifywithai/dist/nextjs/AGENTS.md",
-		mwaiNote: "",
-		mountLocation:
-			"Add `<CommandPalette />` to `app/layout.tsx` inside the `<body>` tag.",
-		envFile: ".env.local",
-	},
+        mwaiAgentsPath: "node_modules/modifywithai/dist/nextjs/AGENTS.md",
+        mwaiNote: "",
+        mountLocation:
+            "Add `<CommandPalette />` to `app/layout.tsx` inside the `<body>` tag.",
+        envFile: ".env.local",
+    },
 
-	remix: {
-		name: "Remix / React Router v7",
-		component: `\`\`\`tsx
+    remix: {
+        name: "Remix / React Router v7",
+        component: `\`\`\`tsx
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router"
 import { CommandMenu, type CommandDefinition } from "better-cmdk"
@@ -153,7 +153,7 @@ export function CommandPalette() {
   )
 }
 \`\`\``,
-		builtInChatRoute: `\`\`\`ts
+        builtInChatRoute: `\`\`\`ts
 // app/routes/api.chat.ts
 import { openai } from "@ai-sdk/openai"
 import { streamText, convertToModelMessages } from "ai"
@@ -169,16 +169,16 @@ export async function action({ request }: ActionFunctionArgs) {
   return result.toUIMessageStreamResponse()
 }
 \`\`\``,
-		mwaiAgentsPath: "node_modules/modifywithai/dist/remix/AGENTS.md",
-		mwaiNote: "",
-		mountLocation:
-			"Add `<CommandPalette />` to `app/root.tsx` inside the root component.",
-		envFile: ".env",
-	},
+        mwaiAgentsPath: "node_modules/modifywithai/dist/remix/AGENTS.md",
+        mwaiNote: "",
+        mountLocation:
+            "Add `<CommandPalette />` to `app/root.tsx` inside the root component.",
+        envFile: ".env",
+    },
 
-	"tanstack-start": {
-		name: "TanStack Start",
-		component: `\`\`\`tsx
+    "tanstack-start": {
+        name: "TanStack Start",
+        component: `\`\`\`tsx
 import { useState, useEffect } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { CommandMenu, type CommandDefinition } from "better-cmdk"
@@ -234,7 +234,7 @@ export function CommandPalette() {
   )
 }
 \`\`\``,
-		builtInChatRoute: `\`\`\`ts
+        builtInChatRoute: `\`\`\`ts
 // app/routes/api/chat.ts
 import { createAPIFileRoute } from "@tanstack/react-start/api"
 import { openai } from "@ai-sdk/openai"
@@ -253,17 +253,17 @@ export const APIRoute = createAPIFileRoute("/api/chat")({
   },
 })
 \`\`\``,
-		mwaiAgentsPath:
-			"node_modules/modifywithai/dist/tanstack-start/AGENTS.md",
-		mwaiNote: "",
-		mountLocation:
-			"Add `<CommandPalette />` to `app/routes/__root.tsx` inside the root component.",
-		envFile: ".env",
-	},
+        mwaiAgentsPath:
+            "node_modules/modifywithai/dist/tanstack-start/AGENTS.md",
+        mwaiNote: "",
+        mountLocation:
+            "Add `<CommandPalette />` to `app/routes/__root.tsx` inside the root component.",
+        envFile: ".env",
+    },
 
-	vite: {
-		name: "Vite / Other",
-		component: `\`\`\`tsx
+    vite: {
+        name: "Vite / Other",
+        component: `\`\`\`tsx
 import { useState, useEffect } from "react"
 import { CommandMenu, type CommandDefinition } from "better-cmdk"
 import { LayoutDashboardIcon, SettingsIcon, SunMoonIcon } from "lucide-react"
@@ -317,7 +317,7 @@ export function CommandPalette() {
   )
 }
 \`\`\``,
-		builtInChatRoute: `Create a streaming chat endpoint for your framework/server. The handler should:
+        builtInChatRoute: `Create a streaming chat endpoint for your framework/server. The handler should:
 
 \`\`\`ts
 import { openai } from "@ai-sdk/openai"
@@ -333,18 +333,19 @@ const result = streamText({
 })
 return result.toUIMessageStreamResponse()
 \`\`\``,
-		mwaiAgentsPath: "node_modules/modifywithai/AGENTS.md",
-		mwaiNote: `\n> **Note**: ModifyWithAI requires a server-side token endpoint. If your Vite app uses a separate backend (Express, Fastify, etc.), adapt the token endpoint from the guide that most closely matches your setup. If your app is a pure SPA with no server, choose the built-in chat option instead.\n`,
-		mountLocation:
-			"Add `<CommandPalette />` to `src/App.tsx` or the main entry component.",
-		envFile: ".env",
-	},
+        mwaiAgentsPath: "node_modules/modifywithai/AGENTS.md",
+        mwaiNote:
+            "\n> **Note**: ModifyWithAI requires a server-side token endpoint. If your Vite app uses a separate backend (Express, Fastify, etc.), adapt the token endpoint from the guide that most closely matches your setup. If your app is a pure SPA with no server, choose the built-in chat option instead.\n",
+        mountLocation:
+            "Add `<CommandPalette />` to `src/App.tsx` or the main entry component.",
+        envFile: ".env",
+    },
 }
 
 export const INTEGRATION_PROMPT = (framework: Framework): string => {
-	const config = FRAMEWORK_CONFIG[framework]
+    const config = FRAMEWORK_CONFIG[framework]
 
-	return `# Set up better-cmdk command palette (${config.name})
+    return `# Set up better-cmdk command palette (${config.name})
 
 better-cmdk is a command palette with AI chat for React. Your task is to install it, discover commands from my codebase, and create a working command palette.
 

@@ -55,6 +55,7 @@ function ChatMessageList({
 }: ChatMessageListProps) {
     const listRef = React.useRef<HTMLDivElement>(null)
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: children triggers scroll-to-bottom on new messages
     React.useEffect(() => {
         if (listRef.current) {
             listRef.current.scrollTop = listRef.current.scrollHeight

@@ -1,9 +1,9 @@
 "use client"
 
-import { Command as CommandPrimitive } from "../../lib/cmdk"
 import { SearchIcon } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import * as React from "react"
+import { Command as CommandPrimitive } from "../../lib/cmdk"
 
 import { cn } from "../../lib/utils"
 import {
@@ -44,7 +44,10 @@ function CommandDialogContent({
                     "backdrop-blur-xl fixed top-1/3 left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] overflow-hidden rounded-xl border-none p-2 shadow-2xl ring-0 duration-200 outline-none sm:max-w-lg",
                     className,
                 )}
-                style={{ backgroundColor: "color-mix(in oklch, var(--background) 95%, transparent)" }}
+                style={{
+                    backgroundColor:
+                        "color-mix(in oklch, var(--background) 95%, transparent)",
+                }}
                 {...props}
             >
                 {children}
@@ -149,11 +152,19 @@ function CommandGroup({
                     heading.style.zIndex = "10"
                     heading.style.width = "fit-content"
                     heading.style.backdropFilter = "blur(24px)"
-                    heading.style.WebkitBackdropFilter = "blur(24px)"
-                    heading.style.backgroundColor = "color-mix(in oklch, var(--background) 95%, transparent)"
+                    heading.style.setProperty(
+                        "-webkit-backdrop-filter",
+                        "blur(24px)",
+                    )
+                    heading.style.backgroundColor =
+                        "color-mix(in oklch, var(--background) 95%, transparent)"
                     heading.style.borderRadius = "6px"
                     heading.style.setProperty("padding-top", "4px", "important")
-                    heading.style.setProperty("padding-bottom", "4px", "important")
+                    heading.style.setProperty(
+                        "padding-bottom",
+                        "4px",
+                        "important",
+                    )
                 }
             }
             if (typeof ref === "function") ref(node)

@@ -1,15 +1,7 @@
 "use client"
 
 import type { UIMessage } from "ai"
-import {
-    Command as CommandPrimitive,
-    defaultFilter,
-    useCommandState,
-} from "../../lib/cmdk"
-import {
-    ArrowUpIcon,
-    MessageCircleIcon,
-} from "lucide-react"
+import { ArrowUpIcon, MessageCircleIcon } from "lucide-react"
 import { motion } from "motion/react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import * as React from "react"
@@ -19,6 +11,11 @@ import {
     type ExternalChat,
     useCommandMenuContext,
 } from "../../context/command-menu-context"
+import {
+    Command as CommandPrimitive,
+    defaultFilter,
+    useCommandState,
+} from "../../lib/cmdk"
 import { cn } from "../../lib/utils"
 import { AssistantMessages } from "./assistant-messages"
 import { ChatEmpty, ChatLoading, ChatMessageList } from "./chat"
@@ -28,7 +25,6 @@ import {
     CommandShortcut,
     CommandEmpty as ShadcnCommandEmpty,
 } from "./command"
-import { Kbd } from "./kbd"
 import {
     Dialog,
     DialogDescription,
@@ -36,6 +32,7 @@ import {
     DialogPortal,
     DialogTitle,
 } from "./dialog"
+import { Kbd } from "./kbd"
 
 const noopApproval = (_r: { id: string; approved: boolean }) => {}
 
@@ -126,8 +123,10 @@ function CommandContent({
                         {
                             "--cmdk-radius": cornersValueMap[corners],
                             maxHeight: "45vh",
-                            backgroundColor: "color-mix(in oklch, var(--background) 95%, transparent)",
-                            boxShadow: "4px 4px 12px -2px rgba(0,0,0,0.12), -4px 4px 12px -2px rgba(0,0,0,0.12), 0 8px 16px -4px rgba(0,0,0,0.1)",
+                            backgroundColor:
+                                "color-mix(in oklch, var(--background) 95%, transparent)",
+                            boxShadow:
+                                "4px 4px 12px -2px rgba(0,0,0,0.12), -4px 4px 12px -2px rgba(0,0,0,0.12), 0 8px 16px -4px rgba(0,0,0,0.1)",
                             ...(borderColor
                                 ? { "--tw-ring-color": borderColor }
                                 : {}),
@@ -138,7 +137,25 @@ function CommandContent({
                     {children}
                 </DialogPrimitive.Content>
                 <div className="flex justify-end select-none">
-                    <a href="https://better-cmdk.com" target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground font-medium px-2 py-0.5 hover:text-foreground transition-colors" style={{ borderRadius: "0 0 0.375rem 0.375rem", marginRight: "1rem", backgroundColor: "color-mix(in oklch, var(--background) 95%, transparent)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderLeft: "1px solid var(--color-input)", borderRight: "1px solid var(--color-input)", borderBottom: "1px solid var(--color-input)", boxShadow: "4px 4px 12px -2px rgba(0,0,0,0.12), -4px 4px 12px -2px rgba(0,0,0,0.12), 0 8px 16px -4px rgba(0,0,0,0.1)" }}>
+                    <a
+                        href="https://better-cmdk.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-muted-foreground font-medium px-2 py-0.5 hover:text-foreground transition-colors"
+                        style={{
+                            borderRadius: "0 0 0.375rem 0.375rem",
+                            marginRight: "1rem",
+                            backgroundColor:
+                                "color-mix(in oklch, var(--background) 95%, transparent)",
+                            backdropFilter: "blur(24px)",
+                            WebkitBackdropFilter: "blur(24px)",
+                            borderLeft: "1px solid var(--color-input)",
+                            borderRight: "1px solid var(--color-input)",
+                            borderBottom: "1px solid var(--color-input)",
+                            boxShadow:
+                                "4px 4px 12px -2px rgba(0,0,0,0.12), -4px 4px 12px -2px rgba(0,0,0,0.12), 0 8px 16px -4px rgba(0,0,0,0.1)",
+                        }}
+                    >
                         powered by better-cmdk
                     </a>
                 </div>
@@ -149,7 +166,10 @@ function CommandContent({
 
 const defaultChildren = (
     <>
-        <CommandInput placeholder="Search for commands or ask AI..." showSendButton />
+        <CommandInput
+            placeholder="Search for commands or ask AI..."
+            showSendButton
+        />
         <CommandList>
             <CommandEmpty />
         </CommandList>
@@ -174,8 +194,6 @@ function CommandMenuInner({
         switchToCommand,
         messages,
         isEnabled,
-        sendMessage,
-        addToolApprovalResponse,
         setInputValue,
         inputValue,
     } = useCommandMenuContext()
@@ -357,7 +375,9 @@ function CommandInput({
             data-slot="command-input-wrapper"
             className={cn(
                 "order-2 flex h-11 items-center gap-2 px-6 transition-[margin,border-color] duration-200",
-                showList ? "border-t border-input mt-0" : "border-t border-transparent mt-0",
+                showList
+                    ? "border-t border-input mt-0"
+                    : "border-t border-transparent mt-0",
             )}
         >
             <CommandPrimitive.Input
@@ -530,7 +550,8 @@ function groupCommands(
         const key = cmd.group
         const idx = seen.get(key)
         if (idx !== undefined) {
-            groups[idx]!.items.push(cmd)
+            const group = groups[idx]
+            if (group) group.items.push(cmd)
         } else {
             seen.set(key, groups.length)
             groups.push({ heading: key, items: [cmd] })
@@ -540,8 +561,8 @@ function groupCommands(
     // Move ungrouped (heading === undefined) to the front
     const ungroupedIdx = groups.findIndex((g) => g.heading === undefined)
     if (ungroupedIdx > 0) {
-        const ungrouped = groups.splice(ungroupedIdx, 1)[0]!
-        groups.unshift(ungrouped)
+        const [ungrouped] = groups.splice(ungroupedIdx, 1)
+        if (ungrouped) groups.unshift(ungrouped)
     }
 
     return groups
@@ -655,7 +676,6 @@ function CommandList({
         sendMessage,
         addToolApprovalResponse,
         agenticActions,
-        requestClose,
         switchToChat,
         startNewChat,
         conversations,

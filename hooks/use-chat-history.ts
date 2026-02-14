@@ -47,7 +47,7 @@ function deriveTitle(messages: UIMessage[]): string {
             )
             .map((p) => p.text)
             .join(" ") || "New conversation"
-    return text.length > 50 ? text.slice(0, 50) + "..." : text
+    return text.length > 50 ? `${text.slice(0, 50)}...` : text
 }
 
 function validateStored(data: unknown): StoredChatHistory | null {

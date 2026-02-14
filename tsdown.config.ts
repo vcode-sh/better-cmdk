@@ -11,5 +11,5 @@ export default defineConfig({
     clean: true,
     minify: true,
     skipNodeModulesBundle: true,
-    exports: publish ? true : false,
+    exports: publish,
 })
